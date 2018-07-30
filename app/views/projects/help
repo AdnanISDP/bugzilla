@@ -1,0 +1,157 @@
+
+  saad
+  ....................
+  def show
+    @user = ProjectUser.where(project_id: @project.id)
+    @bug= Bug.where(project_id: @project.id)
+  end
+  def new
+    @project=Project.new
+    @project.project_users.build
+    @user= User.where. not(user_type: 'manager')
+  end
+
+  def create
+    
+    @project=Project.new(project_params)
+    authorize @project
+    if @project.save!
+      @userproject = ProjectUser.new(project_id: @project.id, user_id: current_user.id)
+      @userprojects.save
+      redirect_to projects_path
+    else
+      redirect to new_project
+    end
+  end
+
+  saad new
+  '''''''''''''''''
+  <h1>create project</h1>
+<div class="row">
+<div class="col-md-6 col-md-offset-3">
+
+<%= form_for @project, url:{action: 'create'} do |f| %>
+    <%= f.label :name_project %>
+    <%= f.text_field :name, class: 'form-control' %>
+
+       <%= f.fields_for :project_user do |pu| %>
+             <%= pu.label @user.name %> <br>         
+             <%= pu.collection_check_boxes(:id, @user, :id, :name,:multiple => true)  %>
+    <% end %>
+    <br>
+<%= f.submit  class: "btn btn-primary" %>
+<% end %>	
+</div>
+</div>
+
+
+last usama
+.....................
+<h1>update project</h1>
+<div class="row">
+<div class="col-md-6 col-md-offset-3">
+  <%= form_for @project, url: {action: :update} do |f| %>   
+    <%= f.label :name_project %>
+    <%= f.text_field :name, class: 'form-control' %>
+      <%= f.fields_for :project_users do |usr| %>
+          <%= usr.label usr.object.user.name %>
+          <%= usr.check_box(:user_id, {checked: true}) %>
+      <% end %>
+    <%= f.submit  class: "btn btn-primary" %>
+  <% end %>
+</div>
+</div>
+...................
+
+tahir ajax
+...............
+<div class="container">
+    <div>
+      <label>Name_project|</label>
+      <%= @project.name  %>
+    </div>
+
+    <div>
+      <label>Name_user|</label> 
+      <% @project.users.each do|u|%>
+      <%= u.name %>
+      <% end %>
+    </div>
+     <% if (current_user.user_type == "qa") %>
+         <td><%= link_to "add bug", new_bug_path, class: "btn
+          btn-primary" %><td>
+          <% end %>
+    <table class="table table-hover">
+      <thead>
+        <th>Bugs title </th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Assign it yourself</th>
+      </thead>
+      <tbody>
+        <div class="col-md-6 col-md-offset-3">
+          <tr>
+         <% @project.bugs.each do |b| %>
+         <td><%= b.title  %></td>
+         <td> <%= b.types %></td>
+         <td><span id="bug_status_<%= b.id %>" > <%= b.status %></span></td>
+
+            <% if (current_user.user_type == "developer") %>
+           <%  if (b.developer_id != nil )&& (b.status == "started")&& (current_user.id == b.developer_id)%>
+         <td id='<%= b.id %>' >
+          <button id="bug_button_<%= b.id %>" data-id="<%= b.id %>" class="btn btn-primary assign-btn">assign</button>  
+        </td> 
+            <% elsif  (b.status == "complated") && (b.types == "bug") && (current_user.id == b.developer_id) %>
+            <td>resolved</td>
+            <% elsif  (b.status == "feature") && (current_user.id == b.developer_id) %>
+            <td>completed</td>
+            <% elsif  (b.status == "started") && (b.status == "complated")&&(b.status == "resolved")&&(current_user.id != b.developer_id) %>
+            <td>assigned</td>
+            <% else  %>  
+                 <td id='<%= b.id %>' ><button id="bug_button_<%= b.id %>" data-id="<%= b.id %>" class="btn btn-info assignme">Assign me</button></td>
+
+            <% end %>   
+            <% end %>
+           </tr>
+         </div>
+          <% end %>
+       </tbody>
+    </table>
+        <%= link_to 'Back', { controller: 'projects', action: 'index'} %>
+</div>
+
+<script type="text/javascript">
+  $('.assign-btn').on('click', function() {
+    var button = $(this);
+    var bugId = this.parentElement.id;
+     $.ajax({
+       url: '/bugs/'+ bugId +'/assign',
+       method: 'GET',
+       success: function(data) {
+        button.html("mark as complated");
+        status_id = button.attr("data-id")
+
+        $("#bug_status_"+status_id).html("started")
+        },
+     })
+  });
+
+  $(document).ready(function(){
+      $('.mark').on('click', function(){
+         var button = $(this);
+        var bugId = this.parentElement.id;
+       $.ajax({ 
+        url: '/bugs/'+ bugId +'/assigned_bug_path',
+        type: "GET",
+        success: function(data){
+           button.html("Completed");
+                 status_id = button.attr("data-id")
+                $("#bug_status_"+status_id).html("completed")
+
+        }
+      });
+    });
+  });
+
+
+  </script>

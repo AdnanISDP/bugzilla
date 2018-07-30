@@ -1,0 +1,32 @@
+
+<div class="container ">
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>project_name</th>	
+		</tr>
+	</thead>
+	<tbody>
+
+ 		<% @project.each do |p| %>
+		<tr>
+		<td><%= p.name %></td>
+		<div>
+			<td><%= link_to 'show', project_path(p) %></td>
+			<% if policy(@project).edit? %>
+			<td><%= link_to 'Edit', edit_project_path(p) %></td>
+			<% end %>
+
+			<% if policy(@project).destroy? %>
+			<td><%= link_to 'Drop', project_path(p), method: :delete %></td>
+			<% end %>
+		</div>
+	</tr>
+		 <% end %>
+		 <% if policy(@project).create? %>
+		 <td><%= link_to 'create', new_project_path  %></td>
+		 <% end %>
+
+  </tbody>
+</table>
+</div>

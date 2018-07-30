@@ -1,0 +1,83 @@
+<div>
+      <label>Name_user|</label> 
+      <% @project.users.each do|u|%>
+      <%= u.name %>
+      <% end %>
+    </div>
+     <% if (current_user.user_type == "qa") %>
+         <td><%= link_to "add bug", new_bug_path, class: "btn
+          btn-primary" %><td>
+          <% end %>
+    <table class="table table-hover">
+      <thead>
+        <th>Bugs title </th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Assign it yourself</th>
+      </thead>
+      <tbody>
+        <div class="col-md-6 col-md-offset-3">
+          <tr>
+         <% @project.bugs.each do |b| %>
+         <td><%= b.title  %></td>
+         <td> <%= b.types %></td>
+         <td><span id="bug_status_<%= b.id %>" > <%= b.status %></span></td>
+         
+            <% if (current_user.user_type == "developer") %>
+           <%  if (b.developer_id != nil )&& (b.status == "started")&& (current_user.id == b.developer_id)%>
+          <td id='<%= b.id %>' >
+          <button id="bug_button_<%= b.id %>" data-id="<%= b.id %>" class="btn btn-primary assignme">Mark</button>
+                  </td>
+            <% elsif  (b.developer_id != nil )&& (b.types == "bug") && (current_user.id == b.developer_id) %>
+            <td>resolved</td>
+            <% elsif (b.developer_id != nil )&& (b.status == "feature") && (current_user.id == b.developer_id) %>
+
+            <td>completed</td>
+            <% elsif (b.developer_id != nil )&& (b.status == "started")|| (b.status == "completed")||(b.status == "resolved")&& (current_user.id != b.developer_id) %>
+            <td>assigned</td>
+            <% else  %>  
+                 <td id='<%= b.id %>' ><button id="bug_button_<%= b.id %>" data-id="<%= b.id %>" class="btn btn-info assignme">Assign me</button></td>
+            <% end %>   
+            <% end %>
+           </tr>
+         </div>
+          <% end %>
+       </tbody>
+    </table>
+        <%= link_to 'Back', { controller: 'projects', action: 'index'} %>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+      $('.assignme').on('click', function(){
+         var button = $(this);
+         var bugid = this.parentElement.id;
+          $.ajax({ 
+            url: '/bugs/'+ bugid +'/assign',
+            type: "GET",  
+            success: function(data){
+            button.html("Mark");
+           status_id = button.attr("data-id")
+           $("#bug_status_"+status_id).html("started")
+
+    $(document).ready(function(){
+      $('.assignme').on('click', function(){
+         var button = $(this);
+         var bugid = this.parentElement.id;
+          $.ajax({ 
+            url: '/bugs/'+ bugid +'/assigned',
+            type: "GET",
+            success: function(data){
+            button.html("Completed");
+            status_id = button.attr("data-id")
+            $("#bug_status_"+status_id).html("Completed")
+        }
+      });
+    });
+  });
+
+        }
+      });
+    });
+  });
+</script>

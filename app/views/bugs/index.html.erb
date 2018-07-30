@@ -1,0 +1,29 @@
+<div class="container ">
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>title</th>
+			<th>screenshot</th>
+			<th>deadline</th>
+			<th>types</th>
+			<th>status</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% @bug.each do |p|%>
+		<tr>
+		<td><%= p.title%></td>
+		<td><%= image_tag p.screenshot.to_s, :size => '30x30'%></td>
+		<td><%= p.deadline%></td>
+		<td><%= p.types%></td>
+		<td><%= p.status%></td>
+		<div>
+			<td><%= link_to 'Edit', edit_bug_path(p) %></td>
+			<td><%= link_to 'Drop', bug_path(p), method: :delete %></td>
+		</div>
+	</tr>
+		 <% end %>
+		 <td><%= link_to 'create', new_bug_path  %></td>
+ </tbody>
+</table>
+</div>

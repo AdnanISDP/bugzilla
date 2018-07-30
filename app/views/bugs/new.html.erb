@@ -1,0 +1,41 @@
+<h2>create bug</h2>
+
+<div class="row">
+ <div class="col-md-6 col-md-offset-3">
+  <%= form_for @bug, url:{action: :create} do |f| %>
+  <div class="field">
+    <%= f.label :title %>
+    <%= f.text_field :title,class: 'form-control' %>
+  </div>
+
+  <div class="field">
+    <%= f.label :deadline %>
+    <%= f.date_field :deadline ,class: 'form-control' %>
+  </div>
+
+   <div class="field">
+    <%= f.label :screenshot %>
+    <%= f.file_field :screenshot  %>
+  </div> 
+
+
+  <div class="field ">
+     <%= f.label :type %>
+     <%= f.select(:types, Bug::TYPE, {} ,class: 'form-control') %>
+  </div>
+
+   <div class="field ">
+     <%= f.label :status %>
+     <%= f.select(:status, Bug::STATUS, {} ,class: 'form-control') %>
+  </div>
+  <div class="field ">
+    <%= f.label :project %>
+     <%= f.collection_select :project_id, Project.all,:id, :name,{}, class: 'form-control' %> 
+
+ </div>
+  <div class="actions">
+    <%= f.submit "create new bug", class: "btn btn-primary" %>
+  </div>
+  <% end %>
+ </div>
+</div>
